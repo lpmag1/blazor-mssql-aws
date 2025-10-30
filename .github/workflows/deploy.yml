@@ -38,5 +38,5 @@ jobs:
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
           service: blazor-ecs-task-def-service
-          cluster: blazor-ecs-cluster
+          cluster: blazor-cluster
           wait-for-service-stability: true
