@@ -6,11 +6,8 @@ permissions:
   id-token: write # This is required for requesting the JWT
   contents: read # This is required for actions/checkout
 jobs:
-  deploy:
+  update-stack:
     runs-on: ubuntu-latest
-    # only run if ecs_cluster.json has changed in the commit
-    if: |
-      ${{ github.event_name == 'workflow_dispatch' ||  contains(github.event.commits.*.modified, '.aws/ecs-cluster.json') }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
