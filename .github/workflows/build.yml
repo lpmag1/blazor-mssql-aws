@@ -1,28 +1,33 @@
 name: Build
 on:
   workflow_dispatch:
-
-env:
-  ECR_REPOSITORY: lpmag/blazor
-
+  workflow_call:
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read # This is required for actions/checkout
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v3
 
-      # build docker image
-      - name: Build Docker Image
-        run: |
-          docker build -t $ECR_REPOSITORY .
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4 # More information on this action can be found below in the 'AWS Credentials' section
+        with:
+          role-to-assume: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/GitHubOidc
+          aws-region: us-west-2
 
-      # push docker image to ecr
-      - name: Push Docker Image to ECR
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push docker image to Amazon ECR
         env:
-          AWS_REGION: us-west-2
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: lpmag/blazor
+          IMAGE_TAG: latest
         run: |
-          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin ${ vars.AWS_ACCOUNT_ID }.dkr.ecr.$AWS_REGION.amazonaws.com
-          docker tag my-app:latest ${ vars.AWS_ACCOUNT_ID }.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:latest
-          docker push ${ vars.AWS_ACCOUNT_ID }.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:latest
+          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
