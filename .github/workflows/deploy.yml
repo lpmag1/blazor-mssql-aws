@@ -8,6 +8,9 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # only run if ecs_cluster.json has changed in the commit
+    if: |
+      ${{ github.event_name == 'workflow_dispatch' ||  contains(github.event.commits.*.modified, '.aws/ecs-cluster.json') }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
