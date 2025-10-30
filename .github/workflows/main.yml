@@ -1,0 +1,21 @@
+name: Main Workflow
+on:
+  push:
+    branches:
+      - main
+
+# Trigger the build and test workflow
+jobs:
+  trigger-build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Build and Test Workflow
+        uses: actions/github-script@v6
+        with:
+          script: |
+            await github.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'build.yml',
+              ref: 'main'
+            })
