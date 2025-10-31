@@ -1,6 +1,7 @@
 @page "/forms/{Id:int}"
 @using Blazor.Models
 @using Microsoft.EntityFrameworkCore
+@using System.Threading.Tasks
 @rendermode InteractiveServer
 @inject FormCustomizationContext DbContext
 
@@ -21,6 +22,7 @@ else
           <th>Label</th>
           <th>Type</th>
           <th>TypeOptions</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -48,18 +50,13 @@ else
                 }
               }
             </td>
+            <td>
+              <button type="button" class="btn btn-danger" @onclick="() => OnDeleteInput(input.Id)">Delete</button>
+            </td>
           </tr>
         }
       </tbody>
     </table>
-    @if (hasUnsavedChanges)
-    {
-      <button type="button" class="btn btn-primary mb-3" @onclick="OnSave">Save</button>
-    }
-    else
-    {
-      <button type="button" class="btn btn-primary mb-3" disabled>Save</button>
-    }
   </div>
 }
 
@@ -69,7 +66,6 @@ else
 
   private Form? form;
   private const int TextInputTypeId = 1;
-  private bool hasUnsavedChanges = false;
 
   protected override async Task OnInitializedAsync()
   {
@@ -92,7 +88,7 @@ else
     await DbContext.SaveChangesAsync();
   }
 
-  private void OnLabelChange(ChangeEventArgs e, int inputId)
+  private async Task OnLabelChange(ChangeEventArgs e, int inputId)
   {
     if (form == null)
     {
@@ -103,11 +99,11 @@ else
     if (input != null)
     {
       input.Label = e.Value?.ToString() ?? string.Empty;
-      hasUnsavedChanges = true;
+      await DbContext.SaveChangesAsync();
     }
   }
 
-  private void OnInputTypeChange(InputTypeSelect.InputTypeChangedEventArgs args)
+  private async Task OnInputTypeChange(InputTypeSelect.InputTypeChangedEventArgs args)
   {
     if (form == null)
     {
@@ -118,19 +114,23 @@ else
     if (input != null)
     {
       input.InputTypeId = args.InputTypeId;
-      hasUnsavedChanges = true;
+      await DbContext.SaveChangesAsync();
     }
   }
 
-  private void OnSave()
+  private async Task OnDeleteInput(int inputId)
   {
     if (form == null)
     {
       return;
     }
 
-    DbContext.Forms.Update(form);
-    DbContext.SaveChanges();
-    hasUnsavedChanges = false;
+    var input = form.Inputs.FirstOrDefault(i => i.Id == inputId);
+    if (input != null)
+    {
+      form.Inputs.Remove(input);
+      await DbContext.SaveChangesAsync();
+    }
   }
+
 }
