@@ -35,7 +35,7 @@ else
             </td>
             <td>
               <div class="mb-3">
-                <input type="text" class="form-control" value="@input.InputType?.Name" />
+                <InputTypeSelect InputTypeId="@input.InputTypeId" />
               </div>
             </td>
             <td>
@@ -57,14 +57,16 @@ else
 @code {
   [Parameter]
   public int Id { get; set; }
+
   private Form? form;
+  private const int TextInputTypeId = 1;
 
   protected override async Task OnInitializedAsync()
   {
     form = await DbContext.Forms
     .Include(f => f.Inputs)
     .ThenInclude(i => i.InputType)
-    .ThenInclude(it => it.InputTypeOptions)
+    .ThenInclude(it => it!.InputTypeOptions)
     .FirstOrDefaultAsync(f => f.Id == Id);
   }
 
@@ -74,7 +76,7 @@ else
     {
       Label = "New Input",
       FormId = form!.Id,
-      InputTypeId = 1 // Default to first input type
+      InputTypeId = 1
     };
     await DbContext.Inputs.AddAsync(newInput);
     await DbContext.SaveChangesAsync();

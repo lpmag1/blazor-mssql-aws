@@ -1,0 +1,31 @@
+@using Blazor.Models
+@using Microsoft.EntityFrameworkCore
+@inject FormCustomizationContext DbContext
+<select class="form-select" @bind="InputTypeId">
+  @foreach (var inputType in inputTypes)
+  {
+    @if (InputTypeId == inputType.Id)
+    {
+      <option selected value="@inputType.Id">@inputType.Name</option>
+    }
+    else
+    {
+      <option value="@inputType.Id">@inputType.Name</option>
+    }
+  }
+</select>
+
+@code {
+  [Parameter]
+  public int InputTypeId { get; set; }
+  [Parameter]
+  public EventCallback<int> InputTypeIdChanged { get; set; }
+
+  private List<InputType> inputTypes = new List<InputType>();
+
+
+  protected override async Task OnInitializedAsync()
+  {
+    inputTypes = await DbContext.InputTypes.ToListAsync();
+  }
+}
