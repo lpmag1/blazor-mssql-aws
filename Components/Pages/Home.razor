@@ -1,7 +1,37 @@
 ﻿@page "/"
+@rendermode InteractiveServer
+@inject Blazor.Models.FormCustomizationContext DbContext
+@using Blazor.Models
+@using Microsoft.EntityFrameworkCore
 
 <PageTitle>Home</PageTitle>
+<div class="container text-left">
+  <h1>Hello!</h1>
+  <p>
+    Welcome to the form customization app. To view available forms, select one from the menu below.
+  </p>
+  <label for="formSelect" class="form-label">Select a form to display </label>
+  <select class="form-select" aria-label="Select a form" @bind="selectedFormId" id="formSelect">
+    <option disabled selected value=""></option>
+    @foreach (var form in forms)
+    {
+      <option value="@form.Id">@form.Name</option>
+    }
+  </select>
 
-<h1>Hello!</h1>
+  @if (selectedFormId != null)
+  {
+    <span>Form @selectedFormId was selected</span>
+  }
+</div>
 
-Welcome to your new app.
+@code {
+  private List<Form> forms = new();
+  private int? selectedFormId;
+
+  protected override async Task OnInitializedAsync()
+  {
+    forms = await DbContext.Forms.ToListAsync();
+  }
+
+}
