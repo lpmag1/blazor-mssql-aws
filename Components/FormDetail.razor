@@ -1,0 +1,32 @@
+@using Blazor.Models
+@using Microsoft.EntityFrameworkCore
+@inject FormCustomizationContext DbContext
+
+@if (Form != null)
+{
+  <form>
+    @foreach (var input in Form.Inputs)
+    {
+      <div class="mb-3">
+        <label for="@input.Id" class="form-label">@input.Label</label>
+      </div>
+    }
+  </form>
+}
+else
+{
+  <p>Loading form details...</p>
+}
+
+@code {
+  [Parameter]
+  public int FormId { get; set; }
+  public Form? Form { get; set; }
+
+  protected override async Task OnInitializedAsync()
+  {
+    Form = await DbContext.Forms
+    .Include(f => f.Inputs)
+    .FirstOrDefaultAsync(f => f.Id == FormId);
+  }
+}

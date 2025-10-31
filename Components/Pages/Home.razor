@@ -21,7 +21,9 @@
 
   @if (selectedFormId != null)
   {
-    <span>Form @selectedFormId was selected</span>
+    <div class="mt-4 p-3 border rounded-3">
+      <FormDetail FormId="selectedFormId.Value" />
+    </div>
   }
 </div>
 
