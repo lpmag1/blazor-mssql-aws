@@ -1,0 +1,28 @@
+@page "/forms/{Id:int}"
+@using Blazor.Models
+@using Microsoft.EntityFrameworkCore
+@rendermode InteractiveServer
+@inject FormCustomizationContext DbContext
+
+<PageTitle>Form - @Id</PageTitle>
+@if (form == null)
+{
+  <p><em>Loading...</em></p>
+}
+else
+{
+  <h1>Editing @form.Name</h1>
+}
+
+@code {
+  [Parameter]
+  public int Id { get; set; }
+  private Form? form;
+
+  protected override async Task OnInitializedAsync()
+  {
+    form = await DbContext.Forms
+    .Include(f => f.Inputs)
+    .FirstOrDefaultAsync(f => f.Id == Id);
+  }
+}

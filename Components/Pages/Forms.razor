@@ -1,12 +1,15 @@
 ﻿@page "/forms"
 @using Blazor.Models
 @using Microsoft.EntityFrameworkCore
+@using System.Threading.Tasks
 @rendermode InteractiveServer
 @inject FormCustomizationContext DbContext
+@inject NavigationManager NavigationManager
 
 <PageTitle>Forms</PageTitle>
 
 <h1>Edit Forms</h1>
+<button type="button" class="btn btn-primary mb-3" @onclick="OnClick">Add Form</button>
 <div class="mt-4 p-3 border rounded-3">
     <table class="table table-striped">
         <thead>
@@ -43,5 +46,16 @@
         .Include(f => f.Inputs)
         .ThenInclude(i => i.InputType)
         .ToListAsync();
+    }
+
+    private async Task OnClick()
+    {
+        var newForm = new Form
+        {
+            Name = "New Form"
+        };
+        await DbContext.Forms.AddAsync(newForm);
+        await DbContext.SaveChangesAsync();
+        NavigationManager.NavigateTo($"/forms/{newForm.Id}");
     }
 }
