@@ -36,7 +36,7 @@ else
             </td>
             <td>
               <div class="mb-3">
-                <InputTypeSelect InputTypeId="@input.InputTypeId" />
+                <InputTypeSelect Id="@input.Id" InputTypeId="@input.InputTypeId" InputTypeIdChanged="OnInputTypeChange" />
               </div>
             </td>
             <td>
@@ -103,6 +103,21 @@ else
     if (input != null)
     {
       input.Label = e.Value?.ToString() ?? string.Empty;
+      hasUnsavedChanges = true;
+    }
+  }
+
+  private void OnInputTypeChange(InputTypeSelect.InputTypeChangedEventArgs args)
+  {
+    if (form == null)
+    {
+      return;
+    }
+
+    var input = form.Inputs.FirstOrDefault(i => i.Id == args.InputId);
+    if (input != null)
+    {
+      input.InputTypeId = args.InputTypeId;
       hasUnsavedChanges = true;
     }
   }

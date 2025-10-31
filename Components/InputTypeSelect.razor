@@ -1,8 +1,8 @@
 @using Blazor.Models
 @using Microsoft.EntityFrameworkCore
-@using SQLitePCL
+
 @inject FormCustomizationContext DbContext
-<select class="form-select" @bind="InputTypeId">
+<select class="form-select" @onchange="OnChange">
   @foreach (var inputType in inputTypes)
   {
     @if (InputTypeId == inputType.Id)
@@ -18,9 +18,11 @@
 
 @code {
   [Parameter]
+  public int Id { get; set; }
+  [Parameter]
   public int InputTypeId { get; set; }
   [Parameter]
-  public EventCallback<int> InputTypeIdChanged { get; set; }
+  public EventCallback<InputTypeChangedEventArgs> InputTypeIdChanged { get; set; }
 
   private List<InputType> inputTypes = new List<InputType>();
 
@@ -29,4 +31,25 @@
   {
     inputTypes = await DbContext.InputTypes.ToListAsync();
   }
+
+  public class InputTypeChangedEventArgs
+  {
+    public int InputTypeId { get; set; }
+    public int InputId { get; set; }
+  }
+
+  private void OnChange(ChangeEventArgs e)
+  {
+    if (int.TryParse(e.Value?.ToString(), out int newInputTypeId))
+    {
+      InputTypeId = newInputTypeId;
+      var args = new InputTypeChangedEventArgs
+      {
+        InputId = Id,
+        InputTypeId = newInputTypeId
+      };
+      InputTypeIdChanged.InvokeAsync(args);
+    }
+  }
+
 }
