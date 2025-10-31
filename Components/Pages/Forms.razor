@@ -9,7 +9,7 @@
 <PageTitle>Forms</PageTitle>
 
 <h1>Edit Forms</h1>
-<button type="button" class="btn btn-primary mb-3" @onclick="OnClick">Add Form</button>
+<button type="button" class="btn btn-primary mb-3" @onclick="OnAdd">Add Form</button>
 <div class="mt-4 p-3 border rounded-3">
     <table class="table table-striped">
         <thead>
@@ -17,6 +17,7 @@
                 <th>Id</th>
                 <th>Name</th>
                 <th>Inputs</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -30,6 +31,10 @@
                         {
                             <div>@input.Label - @input.InputType?.Name</div>
                         }
+                    </td>
+                    <td>
+                        <a class="btn btn-secondary" href="@($"/forms/{form.Id}")">Edit</a>
+                        <a class="btn btn-danger" href="@($"/forms/{form.Id}/delete")">Delete</a>
                     </td>
                 </tr>
             }
@@ -48,7 +53,7 @@
         .ToListAsync();
     }
 
-    private async Task OnClick()
+    private async Task OnAdd()
     {
         var newForm = new Form
         {

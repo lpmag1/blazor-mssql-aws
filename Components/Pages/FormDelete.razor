@@ -1,0 +1,37 @@
+@page "/forms/{Id:int}/delete"
+@using Blazor.Models
+@using System.Threading.Tasks
+@inject NavigationManager NavigationManager
+@inject FormCustomizationContext DbContext
+@rendermode InteractiveServer
+
+<h3>Deleting @form?.Name</h3>
+<p>Are you sure you want to delete this form?</p>
+<button class="btn btn-danger" @onclick="OnDelete">Delete</button>
+<button class="btn btn-secondary" @onclick="OnCancel">Cancel</button>
+
+@code {
+  [Parameter]
+  public int Id { get; set; }
+  private Form? form;
+
+  protected override async Task OnInitializedAsync()
+  {
+    form = await DbContext.Forms.FindAsync(Id);
+  }
+
+  private async Task OnDelete()
+  {
+    if (form != null)
+    {
+      DbContext.Forms.Remove(form);
+      await DbContext.SaveChangesAsync();
+      NavigationManager.NavigateTo("/forms");
+    }
+  }
+
+  private void OnCancel()
+  {
+    NavigationManager.NavigateTo("/forms");
+  }
+}
