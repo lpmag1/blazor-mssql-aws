@@ -13,6 +13,8 @@
 else
 {
   <h1>Editing @form.Name</h1>
+  <label for="formName" class="form-label">Form Name</label>
+  <input type="text" class="form-control mb-3" id="formName" value="@form.Name" @onchange="OnNameChange" />
   <button type="button" class="btn btn-primary mb-3" @onclick="OnAdd">Add Input</button>
   <div class="mt-4 p-3 border rounded-3">
     <table class="table table-striped">
@@ -74,6 +76,17 @@ else
     .ThenInclude(i => i.InputType)
     .ThenInclude(it => it!.InputTypeOptions)
     .FirstOrDefaultAsync(f => f.Id == Id);
+  }
+
+  private async Task OnNameChange(ChangeEventArgs e)
+  {
+    if (form == null)
+    {
+      return;
+    }
+
+    form.Name = e.Value?.ToString() ?? string.Empty;
+    await DbContext.SaveChangesAsync();
   }
 
   private async Task OnAdd()
