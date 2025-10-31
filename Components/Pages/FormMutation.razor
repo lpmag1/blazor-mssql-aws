@@ -12,6 +12,46 @@
 else
 {
   <h1>Editing @form.Name</h1>
+  <button type="button" class="btn btn-primary mb-3" @onclick="OnAdd">Add Input</button>
+  <div class="mt-4 p-3 border rounded-3">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Label</th>
+          <th>Type</th>
+          <th>TypeOptions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var input in form.Inputs)
+        {
+          <tr>
+            <th scope="row">@input.Id</th>
+            <td>
+              <div class="mb-3">
+                <input type="text" class="form-control" value="@input.Label" />
+              </div>
+            </td>
+            <td>
+              <div class="mb-3">
+                <input type="text" class="form-control" value="@input.InputType?.Name" />
+              </div>
+            </td>
+            <td>
+              @if (input.InputType?.InputTypeOptions != null)
+              {
+                @foreach (var option in input.InputType.InputTypeOptions)
+                {
+                  <div>@option.Name</div>
+                }
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
 }
 
 @code {
@@ -23,6 +63,20 @@ else
   {
     form = await DbContext.Forms
     .Include(f => f.Inputs)
+    .ThenInclude(i => i.InputType)
+    .ThenInclude(it => it.InputTypeOptions)
     .FirstOrDefaultAsync(f => f.Id == Id);
+  }
+
+  private async Task OnAdd()
+  {
+    var newInput = new Input
+    {
+      Label = "New Input",
+      FormId = form!.Id,
+      InputTypeId = 1 // Default to first input type
+    };
+    await DbContext.Inputs.AddAsync(newInput);
+    await DbContext.SaveChangesAsync();
   }
 }
