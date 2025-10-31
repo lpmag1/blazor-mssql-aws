@@ -1,5 +1,6 @@
 @using Blazor.Models
 @using Microsoft.EntityFrameworkCore
+@using SQLitePCL
 @inject FormCustomizationContext DbContext
 <select class="form-select" @bind="InputTypeId">
   @foreach (var inputType in inputTypes)

@@ -16,7 +16,6 @@ namespace Blazor.Models
       var path = Assembly.GetExecutingAssembly().Location;
       var folder = Path.GetDirectoryName(path);
       DbPath = Path.Join(folder, "app.db");
-      Console.WriteLine($"Database path: {DbPath}");
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)

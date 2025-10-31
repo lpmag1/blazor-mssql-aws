@@ -4,7 +4,7 @@
 @rendermode InteractiveServer
 @inject FormCustomizationContext DbContext
 
-<PageTitle>Form - @Id</PageTitle>
+<PageTitle>Editing @form?.Name</PageTitle>
 @if (form == null)
 {
   <p><em>Loading...</em></p>
@@ -30,7 +30,8 @@ else
             <th scope="row">@input.Id</th>
             <td>
               <div class="mb-3">
-                <input type="text" class="form-control" value="@input.Label" />
+                <input type="text" class="form-control" id="@input.Id" value="@input.Label"
+                  @onchange="(e) => OnLabelChange(e, input.Id)" />
               </div>
             </td>
             <td>
@@ -51,6 +52,14 @@ else
         }
       </tbody>
     </table>
+    @if (hasUnsavedChanges)
+    {
+      <button type="button" class="btn btn-primary mb-3" @onclick="OnSave">Save</button>
+    }
+    else
+    {
+      <button type="button" class="btn btn-primary mb-3" disabled>Save</button>
+    }
   </div>
 }
 
@@ -60,6 +69,7 @@ else
 
   private Form? form;
   private const int TextInputTypeId = 1;
+  private bool hasUnsavedChanges = false;
 
   protected override async Task OnInitializedAsync()
   {
@@ -80,5 +90,32 @@ else
     };
     await DbContext.Inputs.AddAsync(newInput);
     await DbContext.SaveChangesAsync();
+  }
+
+  private void OnLabelChange(ChangeEventArgs e, int inputId)
+  {
+    if (form == null)
+    {
+      return;
+    }
+
+    var input = form.Inputs.FirstOrDefault(i => i.Id == inputId);
+    if (input != null)
+    {
+      input.Label = e.Value?.ToString() ?? string.Empty;
+      hasUnsavedChanges = true;
+    }
+  }
+
+  private void OnSave()
+  {
+    if (form == null)
+    {
+      return;
+    }
+
+    DbContext.Forms.Update(form);
+    DbContext.SaveChanges();
+    hasUnsavedChanges = false;
   }
 }
