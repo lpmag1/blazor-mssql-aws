@@ -1,0 +1,27 @@
+@using Blazor.Models
+@using Microsoft.EntityFrameworkCore
+@inject FormCustomizationContext DbContext
+
+@if (InputType != null && InputType.InputTypeOptions != null)
+{
+  <select class="form-select" id="@InputType.Id">
+    <option selected value=""></option>
+    @foreach (var option in InputType.InputTypeOptions)
+    {
+      <option value="@option.Id">@option.Name</option>
+    }
+  </select>
+}
+
+@code {
+  [Parameter]
+  public int InputTypeId { get; set; }
+  public InputType? InputType { get; set; }
+
+  protected override async Task OnInitializedAsync()
+  {
+    InputType = await DbContext.InputTypes
+    .Include(i => i.InputTypeOptions)
+    .FirstOrDefaultAsync(it => it.Id == InputTypeId);
+  }
+}
