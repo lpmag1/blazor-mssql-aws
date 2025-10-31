@@ -21,13 +21,26 @@ else
 
 @code {
   [Parameter]
-  public int FormId { get; set; }
+  public int? FormId { get; set; }
+  [Parameter]
+  public EventCallback<int?> FormIdChanged { get; set; }
   public Form? Form { get; set; }
 
   protected override async Task OnInitializedAsync()
+  {
+    await LoadForm();
+  }
+
+  protected override async Task OnParametersSetAsync()
+  {
+    await LoadForm();
+  }
+
+  private async Task LoadForm()
   {
     Form = await DbContext.Forms
     .Include(f => f.Inputs)
     .FirstOrDefaultAsync(f => f.Id == FormId);
   }
+
 }

@@ -21,7 +21,7 @@
 @if (selectedFormId != null)
 {
   <div class="mt-4 p-3 border rounded-3">
-    <FormView FormId="selectedFormId.Value" />
+    <FormView @bind-FormId="selectedFormId" />
   </div>
 }
 
