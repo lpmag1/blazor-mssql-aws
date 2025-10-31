@@ -1,0 +1,47 @@
+﻿@page "/forms"
+@using Blazor.Models
+@using Microsoft.EntityFrameworkCore
+@rendermode InteractiveServer
+@inject FormCustomizationContext DbContext
+
+<PageTitle>Forms</PageTitle>
+
+<h1>Edit Forms</h1>
+<div class="mt-4 p-3 border rounded-3">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Inputs</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var form in forms)
+            {
+                <tr>
+                    <th scope="row">@form.Id</th>
+                    <td>@form.Name</td>
+                    <td>
+                        @foreach (var input in form.Inputs)
+                        {
+                            <div>@input.Label - @input.InputType?.Name</div>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    private List<Form> forms = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        forms = await DbContext.Forms
+        .Include(f => f.Inputs)
+        .ThenInclude(i => i.InputType)
+        .ToListAsync();
+    }
+}

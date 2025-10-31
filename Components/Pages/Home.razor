@@ -5,27 +5,25 @@
 @using Microsoft.EntityFrameworkCore
 
 <PageTitle>Home</PageTitle>
-<div class="container text-left">
-  <h1>Hello!</h1>
-  <p>
-    Welcome to the form customization app. To view available forms, select one from the menu below.
-  </p>
-  <label for="formSelect" class="form-label">Select a form to display </label>
-  <select class="form-select" aria-label="Select a form" @bind="selectedFormId" id="formSelect">
-    <option selected value=""></option>
-    @foreach (var form in forms)
-    {
-      <option value="@form.Id">@form.Name</option>
-    }
-  </select>
-
-  @if (selectedFormId != null)
+<h1>Hello!</h1>
+<p>
+  Welcome to the form customization app. To view available forms, select one from the menu below.
+</p>
+<label for="formSelect" class="form-label">Select a form to display </label>
+<select class="form-select" aria-label="Select a form" @bind="selectedFormId" id="formSelect">
+  <option selected value=""></option>
+  @foreach (var form in forms)
   {
-    <div class="mt-4 p-3 border rounded-3">
-      <FormView FormId="selectedFormId.Value" />
-    </div>
+    <option value="@form.Id">@form.Name</option>
   }
-</div>
+</select>
+
+@if (selectedFormId != null)
+{
+  <div class="mt-4 p-3 border rounded-3">
+    <FormView FormId="selectedFormId.Value" />
+  </div>
+}
 
 @code {
   private List<Form> forms = new();
