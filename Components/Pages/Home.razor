@@ -12,7 +12,7 @@
   </p>
   <label for="formSelect" class="form-label">Select a form to display </label>
   <select class="form-select" aria-label="Select a form" @bind="selectedFormId" id="formSelect">
-    <option disabled selected value=""></option>
+    <option selected value=""></option>
     @foreach (var form in forms)
     {
       <option value="@form.Id">@form.Name</option>
@@ -22,7 +22,7 @@
   @if (selectedFormId != null)
   {
     <div class="mt-4 p-3 border rounded-3">
-      <FormDetail FormId="selectedFormId.Value" />
+      <FormView FormId="selectedFormId.Value" />
     </div>
   }
 </div>

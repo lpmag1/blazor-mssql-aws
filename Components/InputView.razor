@@ -1,0 +1,41 @@
+@using Blazor.Models
+@using Microsoft.EntityFrameworkCore
+@inject FormCustomizationContext DbContext
+
+@if (Input != null && Input.InputType != null)
+{
+  @switch (Input.InputType.Name)
+  {
+    case "Text":
+      <input type="text" class="form-control" id="@Input.Id" />
+      break;
+    case "Number":
+      <input type="number" class="form-control" id="@Input.Id" />
+      break;
+    case "Date":
+      <input type="date" class="form-control" id="@Input.Id" />
+      break;
+    case "Dropdown":
+      break;
+    default:
+      <input type="text" class="form-control" id="@Input.Id" />
+      break;
+  }
+}
+else
+{
+  <p>Loading input details...</p>
+}
+
+@code {
+  [Parameter]
+  public int InputId { get; set; }
+  public Input? Input { get; set; }
+
+  protected override async Task OnInitializedAsync()
+  {
+    Input = await DbContext.Inputs
+    .Include(i => i.InputType)
+    .FirstOrDefaultAsync(i => i.Id == InputId);
+  }
+}
